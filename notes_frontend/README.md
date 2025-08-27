@@ -1,38 +1,64 @@
-# sv
+# Notes Frontend (SvelteKit)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A modern, minimalistic Svelte-based SPA for managing personal notes with authentication and full CRUD. Uses a light theme and the following colors:
+- primary: #1976d2
+- secondary: #424242
+- accent: #ffb300
 
-## Creating a project
+## Features
+- User authentication (login and signup)
+- Create, list, search, edit, and delete notes
+- Responsive layout
+  - Sidebar for navigation and user status
+  - Notes list on the left
+  - Editor/viewer on the right
+- Environment-configurable API base
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Configuration
+Create a .env file (see .env.example):
+```
+VITE_API_BASE=/api
+```
+Point it to your backend (e.g., https://api.example.com) when integrating.
 
-```bash
-# create a new project in the current directory
-npx sv create
+## Scripts
+- npm run dev — start dev server
+- npm run build — build for production
+- npm run preview — preview built app
+- npm run check — type and Svelte checks
+- npm run lint — lint
 
-# create a new project in my-app
-npx sv create my-app
+## Project structure
+- src/lib/services/api.ts — API client (auth + notes CRUD)
+- src/lib/stores/auth.ts — auth store and helpers
+- src/lib/stores/notes.ts — notes store and helpers
+- src/routes/+layout.svelte — app layout with sidebar and auth summary
+- src/routes/+page.svelte — main notes UI (search, list, editor)
+- src/routes/auth/+page.svelte — login/signup
+
+## Backend integration
+This frontend expects a backend with:
+- POST /auth/login { email, password } -> { token, user: { id, email } }
+- POST /auth/signup { email, password } -> { token, user }
+- GET /notes?q=... -> Note[]
+- GET /notes/:id -> Note
+- POST /notes -> Note
+- PUT /notes/:id -> Note
+- DELETE /notes/:id -> { success: boolean }
+
+Attach the token via Authorization: Bearer <token> (handled by api client).
+
+## Notes type
+```
+type Note = {
+  id: string;
+  title: string;
+  content: string;
+  tags?: string[];
+  updatedAt: string; // ISO
+  createdAt: string; // ISO
+}
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Styling
+The light theme and minimal style system is defined in src/app.css using CSS variables, with primary/secondary/accent colors applied to components.
